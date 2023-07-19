@@ -12,9 +12,9 @@ type MemorySubsystem struct {
 }
 
 func (ss *MemorySubsystem) Name() string {
-
 	return "memory"
 }
+
 func (ss *MemorySubsystem) Set(cgroupPath string, res *ResourceConfig) error {
 
 	info, err := GetCgroupPath(ss.Name(), cgroupPath, true)
@@ -30,11 +30,11 @@ func (ss *MemorySubsystem) Set(cgroupPath string, res *ResourceConfig) error {
 			logrus.Error("error")
 			return err
 		}
-
 	}
-
+	return nil
 }
-func (ss *MemorySubsystem) Apply(cgroupPath string, pid string) error {
+
+func (ss *MemorySubsystem) Apply(cgroupPath string, pid int) error {
 	if ss.apply {
 		info, err := GetCgroupPath(ss.Name, cgroupPath, true)
 		if err {
@@ -45,17 +45,16 @@ func (ss *MemorySubsystem) Apply(cgroupPath string, pid string) error {
 			logrus.Error("error")
 			return err
 		}
-		return nil
 	}
+	return nil
 }
+
 func (ss *MemorySubsystem) Remove(cgroupPath string) error {
 
 	info, err := GetCgroupPath(ss.Name(), cgroupPath, true)
 	if err != nil {
 		logrus.Error("error")
 		return err
-
 	}
-	os.RemoveAll(info)
-
+	return os.RemoveAll(info)
 }

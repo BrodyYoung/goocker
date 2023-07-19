@@ -17,6 +17,23 @@ func (ss *CpusetSubsystem) Name() string {
 	return "cpuset"
 }
 
+func (ss *CpusetSubsystem) Set(cgroupPath string, res *ResourceConfig) error {
+	info, err := GetCgroupPath(ss.Name(), cgroupPath, true)
+	if err != nil {
+		logrus.Error("error")
+	}
+	if res.CpuSet != "" {
+		ss.apply = true
+
+		err = ioutil.WriteFile(path.Join(info, "cpuset.txt"), []byte(res.CpuSet), os.ModePerm)
+		if err != nil {
+			logrus.Error("error")
+			return err
+		}
+	}
+	return nil
+}
+
 func (ss *CpusetSubsystem) Apply(cgroupPath string, pid int) error {
 	if ss.apply {
 
@@ -32,9 +49,8 @@ func (ss *CpusetSubsystem) Apply(cgroupPath string, pid int) error {
 			logrus.Error("error")
 			return err
 		}
-		return nil
 	}
-
+	return nil
 }
 
 func (ss *CpusetSubsystem) Remove(cgroupPath string) error {
@@ -43,25 +59,5 @@ func (ss *CpusetSubsystem) Remove(cgroupPath string) error {
 	if err != nil {
 		logrus.Error("error")
 	}
-	os.RemoveAll(info)
-}
-
-func (ss *CpusetSubsystem) Set(cgroupPath string, res *ResourceConfig) error {
-	info, err := GetCgroupPath(ss.Name(), cgroupPath, true)
-	if err != nil {
-
-		logrus.Error("error")
-	}
-	if res.CpuSet != "" {
-		ss.apply = true
-
-		err = ioutil.WriteFile(path.Join(info, "cpuset.txt"), []byte(res.CpuSet), os.ModePerm)
-		if err != nil {
-			logrus.Error("error")
-			return err
-		}
-
-		return nil
-
-	}
+	return os.RemoveAll(info)
 }
