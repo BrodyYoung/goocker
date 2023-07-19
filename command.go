@@ -1,4 +1,4 @@
-package goocker
+package main
 
 import (
 	"fmt"
@@ -73,7 +73,6 @@ var runCommand = cli.Command{
 var commitCommand = cli.Command{
 	Name:  "commit",
 	Usage: "提交",
-
 
 	Action: func(ctx *cli.Context) error {
 		imageName := ctx.Args().Get(0)

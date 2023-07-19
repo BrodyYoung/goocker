@@ -5,7 +5,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"goocker/common"
 	"io/ioutil"
+	"math/rand"
 	"path"
+	"time"
 )
 
 type ContainerInfo struct {
@@ -34,4 +36,17 @@ func getContainerInfo(containerName string) (*ContainerInfo, error) {
 		return nil, err
 	}
 	return info, nil
+}
+
+func GenContainerId(n int) string {
+	letterChar := "0123456789"
+
+	var res = make([]byte, n)
+	rand.Seed(time.Now().UnixNano()) //???????做什么的
+
+	for i, _ := range res {
+		res[i] = letterChar[rand.Intn(n)]
+	}
+
+	return string(res)
 }
