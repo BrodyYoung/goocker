@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 )
 
 type MemorySubsystem struct {
@@ -36,11 +37,11 @@ func (ss *MemorySubsystem) Set(cgroupPath string, res *ResourceConfig) error {
 
 func (ss *MemorySubsystem) Apply(cgroupPath string, pid int) error {
 	if ss.apply {
-		info, err := GetCgroupPath(ss.Name, cgroupPath, true)
-		if err {
+		info, err := GetCgroupPath(ss.Name(), cgroupPath, true)
+		if err != nil {
 			logrus.Error("error")
 		}
-		err = ioutil.WriteFile(path.Join(info, ""), []byte(pid), os.ModePerm)
+		err = ioutil.WriteFile(path.Join(info, ""), []byte(strconv.Itoa(pid)), os.ModePerm)
 		if err != nil {
 			logrus.Error("error")
 			return err
