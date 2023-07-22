@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"goocker/common"
-	"io/ioutil"
 	"math/rand"
+	"os"
 	"path"
 	"time"
 )
@@ -24,7 +24,7 @@ type ContainerInfo struct {
 
 func getContainerInfo(containerName string) (*ContainerInfo, error) {
 	path := path.Join(common.DefaultContainerPath, containerName, common.ContainerInfoFileName)
-	byteSlice, err := ioutil.ReadFile(path)
+	byteSlice, err := os.ReadFile(path)
 	if err != nil {
 		logrus.Errorf("error")
 		return nil, err

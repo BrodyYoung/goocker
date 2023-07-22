@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"goocker/common"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -40,6 +39,6 @@ func getEnvsByPid(pid string) []string {
 		return nil
 	}
 
-	byteSlice, err := ioutil.ReadAll(file)
+	byteSlice, err := os.ReadAll(file)
 	return strings.Split(string(byteSlice), "\u0000")
 }

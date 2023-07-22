@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"goocker/common"
-	"io/ioutil"
 	"os"
 	"path"
 )
@@ -12,12 +11,8 @@ import (
 func GetContainerLog(containerName string) {
 
 	path := path.Join(common.DefaultContainerPath, containerName, common.ContainerLogFileName)
-	file, err := os.Open(path)
-	if err != nil {
-		logrus.Print(err)
-	}
 
-	byteSlice, err := ioutil.ReadAll(file)
+	byteSlice, err := os.ReadFile(path)
 	if err != nil {
 		logrus.Print(err)
 	}

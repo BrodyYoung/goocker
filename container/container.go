@@ -5,7 +5,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"goocker/common"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -50,7 +49,7 @@ func StopContainer(containerName string) {
 		byteSlice, _ := json.Marshal(info)
 
 		path := path.Join(common.DefaultContainerPath, containerName, common.ContainerInfoFileName)
-		err = ioutil.WriteFile(path, byteSlice, 0622)
+		err = os.WriteFile(path, byteSlice, 0622)
 		if err != nil {
 			logrus.Error(err)
 			return
