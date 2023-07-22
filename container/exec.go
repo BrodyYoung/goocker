@@ -33,12 +33,10 @@ func Exec(cmdSlice []string, containerName string) {
 func getEnvsByPid(pid string) []string {
 
 	path := fmt.Sprintf("/proc/%s/environ", pid)
-	file, err := os.Open(path)
 
+	byteSlice, err := os.ReadFile(path)
 	if err != nil {
 		return nil
 	}
-
-	byteSlice, err := os.ReadAll(file)
 	return strings.Split(string(byteSlice), "\u0000")
 }
