@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"goocker/cgroups/subsystem"
 	"goocker/container"
 	"goocker/images"
 )
@@ -24,9 +25,17 @@ var runCommand = cli.Command{
 			Name:  "it",
 			Usage: "交互式终端运行interface terminal",
 		},
-		cli.StringSliceFlag{
-			Name:  "p",
-			Usage: "端口映射",
+		cli.StringFlag{
+			Name:  "m",
+			Usage: "memory limit",
+		},
+		cli.StringFlag{
+			Name:  "cpushare",
+			Usage: "cpushare limit权重值",
+		},
+		cli.StringFlag{
+			Name:  "cpuset",
+			Usage: "cpuset limit",
 		},
 		cli.StringFlag{
 			Name:  "name",
@@ -37,35 +46,44 @@ var runCommand = cli.Command{
 			Usage: "指定网络模式",
 		},
 		cli.StringFlag{
-			Name:  "e",
-			Usage: "指定容器运行环境env",
-		},
-		cli.StringFlag{
 			Name:  "v",
 			Usage: "容器卷挂载",
+		},
+		cli.StringSliceFlag{
+			Name:  "p",
+			Usage: "端口映射",
+		},
+		cli.StringSliceFlag{
+			Name:  "e",
+			Usage: "指定容器运行环境env",
 		},
 	},
 	Action: func(ctx *cli.Context) error {
 		if len(ctx.Args()) < 1 {
 			return fmt.Errorf("args is nil")
 		}
+		resCfg := &subsystem.ResourceConfig{
+			MemoryLimit: ctx.String("m"),
+			CpuShare:    ctx.String("cpushare"),
+			CpuSet:      ctx.String("cpuset"),
+		}
 		d := ctx.Bool("d")
 		it := ctx.Bool("it")
 		if d && it {
 			return fmt.Errorf("不能同时有it和d参数")
-
 		}
+
 		p := ctx.StringSlice("p")
 		name := ctx.String("name")
 		imagesName := ctx.Args().Get(0)
 		v := ctx.String("v")
-		e := ctx.String("e")
-
+		e := ctx.StringSlice("e")
+		net := ctx.String("net")
 		var cmdArray []string
 		for _, args := range ctx.Args().Tail() {
 			cmdArray = append(cmdArray, args)
 		}
-		Run(cmdArray, p, name, d, it, imagesName, v, e)
+		container.Run(cmdArray, e, p, resCfg, imagesName, name, v, net, it)
 		return nil
 	},
 }
