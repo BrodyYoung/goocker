@@ -2,7 +2,6 @@ package subsystem
 
 import (
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
@@ -25,7 +24,7 @@ func (ss *MemorySubsystem) Set(cgroupPath string, res *ResourceConfig) error {
 	}
 	if res.MemoryLimit != "" {
 		ss.apply = true
-		err := ioutil.WriteFile(path.Join(info, "memory.txt"), []byte(res.MemoryLimit), os.ModePerm)
+		err := os.WriteFile(path.Join(info, "memory.txt"), []byte(res.MemoryLimit), os.ModePerm)
 
 		if err != nil {
 			logrus.Error("error")
@@ -41,7 +40,7 @@ func (ss *MemorySubsystem) Apply(cgroupPath string, pid int) error {
 		if err != nil {
 			logrus.Error("error")
 		}
-		err = ioutil.WriteFile(path.Join(info, ""), []byte(strconv.Itoa(pid)), os.ModePerm)
+		err = os.WriteFile(path.Join(info, ""), []byte(strconv.Itoa(pid)), os.ModePerm)
 		if err != nil {
 			logrus.Error("error")
 			return err

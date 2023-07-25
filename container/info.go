@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"goocker/common"
-	"io/ioutil"
 	"math/rand"
+	"os"
 	"path"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -16,15 +18,48 @@ type ContainerInfo struct {
 	Name        string
 	Command     string
 	Volume      string
-	Env         string
+	Env         []string
 	PortMapping []string
 	CreateTime  string
 	Status      string
 }
 
+func RecordContainerInfo(pid int, cmdArr []string, id, containerName string) error {
+	info := &ContainerInfo{
+		Pid:        strconv.Itoa(pid),
+		Id:         id,
+		Name:       containerName,
+		Command:    strings.Join(cmdArr, " "),
+		CreateTime: time.Now().Format("2006-01-02 15:04:05"),
+		Status:     common.Running,
+	}
+
+	path := path.Join(common.DefaultContainerPath, containerName)
+
+	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			logrus.Error(err)
+			return err
+		}
+	}
+
+	file, err := os.Create(path)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	byteSlice, err := json.Marshal(info)
+	_, err = file.Write(byteSlice)
+	if err != nil {
+		logrus.Error(err)
+	}
+	return nil
+}
+
 func getContainerInfo(containerName string) (*ContainerInfo, error) {
 	path := path.Join(common.DefaultContainerPath, containerName, common.ContainerInfoFileName)
-	byteSlice, err := ioutil.ReadFile(path)
+	byteSlice, err := os.ReadFile(path)
 	if err != nil {
 		logrus.Errorf("error")
 		return nil, err
@@ -36,6 +71,15 @@ func getContainerInfo(containerName string) (*ContainerInfo, error) {
 		return nil, err
 	}
 	return info, nil
+}
+
+func DeleteContainerInfo(containerName string) {
+
+	path := path.Join(common.DefaultContainerPath, containerName)
+
+	if err := os.RemoveAll(path); err != nil {
+		logrus.Error(err)
+	}
 }
 
 func GenContainerId(n int) string {

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+	"os"
 )
 
 func main() {
@@ -31,12 +32,13 @@ func main() {
 		initCommand,
 		logCommand,
 	}
-	func(ctx *cli.Context) error {
-		cmd := cli.Command{
-			Name:  "goocker",
-			Usage: "goocker command",
-		}
+	app.Before = func(ctx *cli.Context) error {
+		logrus.SetOutput(os.Stdout)
+		logrus.SetFormatter(&logrus.JSONFormatter{})
+		return nil
+	}
 
-		return logrus.Fatal(cmd)
+	if err := app.Run(os.Args); err != nil {
+		logrus.Fatal(err)
 	}
 }

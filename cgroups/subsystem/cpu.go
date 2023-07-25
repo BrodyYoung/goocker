@@ -2,7 +2,6 @@ package subsystem
 
 import (
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
@@ -24,7 +23,7 @@ func (ss *CpuSubsystem) Set(cgroupPath string, res *ResourceConfig) error {
 	}
 	if res.CpuShare != "" {
 		ss.apply = true
-		err = ioutil.WriteFile(path.Join(info, "cpushare.txt"), []byte(res.CpuShare), os.ModePerm)
+		err = os.WriteFile(path.Join(info, "cpushare.txt"), []byte(res.CpuShare), os.ModePerm)
 		if err != nil {
 			logrus.Error("error")
 			return err
@@ -40,7 +39,7 @@ func (ss *CpuSubsystem) Apply(cgroupPath string, pid int) error {
 			logrus.Error("error")
 			return err
 		}
-		err = ioutil.WriteFile(path.Join(info, ""), []byte(strconv.Itoa(pid)), os.ModePerm)
+		err = os.WriteFile(path.Join(info, ""), []byte(strconv.Itoa(pid)), os.ModePerm)
 		if err != nil {
 			logrus.Error("error")
 			return err
