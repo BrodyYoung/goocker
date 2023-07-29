@@ -19,6 +19,7 @@ const (
 	DefaultContainerPath  = "/var/run/goocker/"
 	ContainerInfoFileName = "config.json"
 	ContainerLogFileName  = "container.log"
+	DefaultNetworkPath    = "/var/run/goocker/network/"
 )
 
 //执行环境相关常量

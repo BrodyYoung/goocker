@@ -54,7 +54,7 @@ func Run(cmdArray, envs, portMapping []string, res *subsystem.ResourceConfig, im
 			return
 		}
 	}
-	setInitCommand(cmdArray, writePipe)
+	sendInitCommand(cmdArray, writePipe)
 
 	if it {
 		if err := parent.Wait(); err != nil {
@@ -68,7 +68,7 @@ func Run(cmdArray, envs, portMapping []string, res *subsystem.ResourceConfig, im
 
 }
 
-func setInitCommand(array []string, writePipe *os.File) {
+func sendInitCommand(array []string, writePipe *os.File) {
 	cmd := strings.Join(array, " ")
 
 	writePipe.WriteString(cmd)
