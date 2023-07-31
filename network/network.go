@@ -2,12 +2,14 @@ package network
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/vishvananda/netlink"
 	"goocker/common"
 	"io/fs"
 	"net"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -76,8 +78,8 @@ func (nw *Network) remove(dumpPath string) error {
 }
 
 func Init() error {
-	var bridgeDriver BridgeDriver
-	drivers[bridgeDriver.Name()] = &BridgeDriver{}
+	var bridgeDriver BridgeNetworkDriver
+	drivers[bridgeDriver.Name()] = &BridgeNetworkDriver{}
 
 	if _, err := os.Stat(common.DefaultNetworkPath); err != nil {
 		os.Mkdir(common.DefaultNetworkPath, os.ModePerm)
@@ -134,6 +136,26 @@ func CreateNetwork(driver, subnet, name string) error {
 	if err != nil {
 		logrus.Error(err)
 		return err
+	}
+	return nil
+}
+
+//配置端口映射关系
+func configPortMapping(ep *Endpoint) error {
+	for _, portMapping := range ep.portMapping {
+		portSlice := strings.Split(portMapping, ":")
+		if len(portSlice) < 2 {
+			continue
+		}
+		option := fmt.Sprintf("-t nat -A PREROUTING -p tcp -m tcp --dport %s -j DNAT --to-destination %s:%s",
+			portSlice[0], ep.IpAddr, portSlice[1])
+		cmd := exec.Command("iptables", strings.Split(option, " ")...)
+
+		output, err := cmd.Output()
+		if err != nil {
+			logrus.Errorf("error:%s", output)
+			continue
+		}
 	}
 	return nil
 }

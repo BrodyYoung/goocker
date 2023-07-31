@@ -5,14 +5,15 @@ import (
 	"net"
 )
 
+//桥接网络模式
 type BridgeNetworkDriver struct {
 }
 
-func (b BridgeNetworkDriver) Name() string {
+func (b *BridgeNetworkDriver) Name() string {
 	return "bridge"
 }
 
-func (b BridgeNetworkDriver) Create(subnet, name string) (*Network, error) {
+func (b *BridgeNetworkDriver) Create(subnet, name string) (*Network, error) {
 
 	ip, ipRange, err := net.ParseCIDR(subnet)
 	if err != nil {
@@ -33,14 +34,14 @@ func (b BridgeNetworkDriver) Create(subnet, name string) (*Network, error) {
 	return n, nil
 }
 
-func (b BridgeNetworkDriver) Delete(nw Network) {
+func (b *BridgeNetworkDriver) Delete(nw Network) {
 
 }
 
-func (b BridgeNetworkDriver) Connect(nw Network, ep Endpoint) {
+func (b *BridgeNetworkDriver) Connect(nw Network, ep Endpoint) {
 
 }
 
-func (b BridgeNetworkDriver) Disconnect(nw Network, ep Endpoint) {
+func (b *BridgeNetworkDriver) Disconnect(nw Network, ep Endpoint) {
 
 }
